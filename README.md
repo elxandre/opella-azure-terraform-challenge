@@ -1,0 +1,1 @@
+# opella-azure-terraform-challenge

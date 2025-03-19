@@ -11,20 +11,6 @@ The solution implements:
 3. GitHub CI/CD pipelines for infrastructure deployment
 4. Code quality and security tools
 
-## Repository Structure
-
-```
-.
-├── README.md
-├── .github/workflows/            # GitHub Actions workflows
-├── modules/                      # Reusable Terraform modules
-│   └── vnet/                     # VNET module with comprehensive networking features
-├── environments/                 # Environment-specific configurations
-│   ├── dev/                      # Development environment
-│   └── prod/                     # Production environment
-└── [Various config files]        # Pre-commit hooks, linting, etc.
-```
-
 ## Reusable VNET Module
 
 The VNET module (`modules/vnet/`) is designed to be highly configurable and reusable across different environments. It provides:

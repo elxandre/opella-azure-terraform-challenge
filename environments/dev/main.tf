@@ -1,5 +1,7 @@
 provider "azurerm" {
   features {}
+  # Skip subscription_id for plan generation
+  skip_provider_registration = true
 }
 
 locals {

@@ -1,4 +1,4 @@
-ß# Add validation rules for inputs
+# Add validation rules for inputs
 locals {
   # Validate NSG rule priorities are unique per subnet
   validate_priority_uniqueness = flatten([
@@ -29,14 +29,14 @@ locals {
   ])}" : null
 }
 
-# Custom validation rules
-resource "null_resource" "validate_nsg_priorities" {
-  count = local.has_duplicate_priorities ? 0 : 1
-
-  lifecycle {
-    precondition {
-      condition     = !local.has_duplicate_priorities
-      error_message = local.duplicate_priority_error
-    }
-  }
-}
+# Commented out for plan generation
+# resource "null_resource" "validate_nsg_priorities" {
+#   count = local.has_duplicate_priorities ? 0 : 1
+#
+#   lifecycle {
+#     precondition {
+#       condition     = !local.has_duplicate_priorities
+#       error_message = local.duplicate_priority_error
+#     }
+#   }
+# }

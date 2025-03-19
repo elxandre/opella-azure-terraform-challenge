@@ -165,3 +165,33 @@ This approach allowed me to verify the configuration accuracy and demonstrate wh
 Although I didn't deploy the actual infrastructure, I implemented several validation techniques:
 
 While I didn't implement additional validation tools like TFLint, Checkov, or Terratest for this challenge, I included configurations for these tools (.pre-commit-config.yaml, .tflint.hcl) to show my awareness of infrastructure testing best practices and what I would implement in a production environment.
+
+To generate the Terraform plan output, I created a separate working directory with a simplified version of my infrastructure using null resources. This approach allowed me to generate a clean plan output that demonstrates the structure and relationships of the infrastructure without requiring actual Azure authentication. I initialized Terraform, generated the plan, and converted it to a human-readable format to include in my submission. This approach showcases what would be deployed without actually consuming Azure resources.
+
+1. Create a separate directory for generating the plan
+mkdir terraform-mock-plan
+cd terraform-mock-plan
+
+# 2. Create the main.tf file with the infrastructure configuration
+Created the file with null resources to simulate the infrastructure - later deleted
+
+# 3. Initialize Terraform in this directory
+terraform init
+
+# 4. Generate the plan and save it to a file
+terraform plan -out=tfplan
+
+# 5. Convert the plan to human-readable format and save it as markdown
+terraform show -no-color tfplan > ../terraform-plan-output.md
+
+# 6. Move back to the root directory
+cd ..
+
+# 7. Add the generated plan output to git
+git add terraform-plan-output.md
+
+# 8. Commit the changes
+git commit -m "Add Terraform plan output for submission"
+
+# 9. Push to GitHub
+git push origin main

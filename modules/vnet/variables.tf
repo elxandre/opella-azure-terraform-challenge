@@ -1,3 +1,9 @@
+variable "resource_prefix" {
+  description = "Prefix for all resources"
+  type        = string
+  default     = "opella"
+}
+
 variable "vnet_name" {
   description = "Name of the virtual network"
   type        = string
@@ -46,7 +52,7 @@ variable "subnets" {
       name                       = string
       service_delegation_name    = string
       service_delegation_actions = optional(list(string))
-    }), {})
+    }))
     enable_flow_logs            = optional(bool, false)
   }))
   default     = {}

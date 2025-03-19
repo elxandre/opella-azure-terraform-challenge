@@ -1,3 +1,16 @@
+provider "azurerm" {
+  features {}
+  
+  # Dummy values for plan generation only
+  subscription_id = "00000000-0000-0000-0000-000000000000"
+  client_id       = "00000000-0000-0000-0000-000000000000"
+  client_secret   = "dummy-value"
+  tenant_id       = "00000000-0000-0000-0000-000000000000"
+  
+  # Skip provider registration
+  skip_provider_registration = true
+}
+
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   location            = var.location
@@ -69,9 +82,9 @@ resource "azurerm_network_security_rule" "nsg_rules" {
 resource "azurerm_network_watcher_flow_log" "flow_logs" {
   for_each = { for k, v in var.subnets : k => v if lookup(v, "enable_flow_logs", false) && var.enable_network_monitoring }
 
-  network_watcher_name = var.network_watcher_name
-  resource_group_name  = var.network_watcher_resource_group_name
-
+  name                      = "${var.resource_prefix}-flow-log-${each.key}"
+  network_watcher_name      = var.network_watcher_name
+  resource_group_name       = var.network_watcher_resource_group_name
   network_security_group_id = azurerm_network_security_group.nsg[each.key].id
   storage_account_id        = var.flow_logs_storage_account_id
   enabled                   = true

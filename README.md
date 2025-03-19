@@ -164,7 +164,4 @@ I then converted this plan to human-readable format with terraform show -no-colo
 This approach allowed me to verify the configuration accuracy and demonstrate what would be deployed without actually consuming Azure resources or incurring costs.
 Although I didn't deploy the actual infrastructure, I implemented several validation techniques:
 
-Static code analysis with TFLint to catch potential issues
-Security scanning with Checkov to identify security misconfigurations
-Terraform's built-in validation to ensure resource configurations were valid
-Created test cases with Terratest that could be used to verify the infrastructure if deployed
+While I didn't implement additional validation tools like TFLint, Checkov, or Terratest for this challenge, I included configurations for these tools (.pre-commit-config.yaml, .tflint.hcl) to show my awareness of infrastructure testing best practices and what I would implement in a production environment.

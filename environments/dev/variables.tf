@@ -11,7 +11,7 @@ variable "owner" {
 variable "admin_cidr_blocks" {
   description = "CIDR blocks that are allowed to access administrative services"
   type        = string
-  default     = "0.0.0.0/0"  # Should be restricted in production
+  default     = "192.168.1.0/24"  # Restrict to internal network
 }
 
 variable "ssh_public_key" {

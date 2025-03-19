@@ -1,5 +1,3 @@
-# environments/prod/main.tf
-
 provider "azurerm" {
   features {}
 }

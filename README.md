@@ -11,20 +11,6 @@ The solution implements:
 3. GitHub CI/CD pipelines for infrastructure deployment
 4. Code quality and security tools
 
-## Repository Structure
-
-```
-.
-├── README.md
-├── .github/workflows/            # GitHub Actions workflows
-├── modules/                      # Reusable Terraform modules
-│   └── vnet/                     # VNET module with comprehensive networking features
-├── environments/                 # Environment-specific configurations
-│   ├── dev/                      # Development environment
-│   └── prod/                     # Production environment
-└── [Various config files]        # Pre-commit hooks, linting, etc.
-```
-
 ## Reusable VNET Module
 
 The VNET module (`modules/vnet/`) is designed to be highly configurable and reusable across different environments. It provides:
@@ -161,3 +147,21 @@ The module includes:
 3. Integrate with a secrets management solution
 4. Set up automated disaster recovery testing
 5. Add infrastructure drift detection
+
+Explaining my Process
+
+I approached this challenge with a design-first methodology. Rather than immediately deploying resources, I carefully designed the infrastructure architecture to ensure it met all requirements for scalability, security, and maintainability.
+I focused on creating a robust, reusable VNET module that handles various networking configurations. The module was designed with flexibility in mind, supporting both simple development environments and complex production setups.
+I tested the Terraform code locally using terraform validate and terraform plan to ensure correct syntax and resource configurations without actually creating resources in Azure.
+
+The terraform plan output was generated using the following approach:
+
+I set up my local environment with the Azure CLI and authenticated to my Azure account
+I ran terraform init to initialize the Terraform configuration
+I used terraform plan -out=tfplan to generate the execution plan without applying it
+I then converted this plan to human-readable format with terraform show -no-color tfplan > terraform-plan-output.md
+
+This approach allowed me to verify the configuration accuracy and demonstrate what would be deployed without actually consuming Azure resources or incurring costs.
+Although I didn't deploy the actual infrastructure, I implemented several validation techniques:
+
+While I didn't implement additional validation tools like TFLint, Checkov, or Terratest for this challenge, I included configurations for these tools (.pre-commit-config.yaml, .tflint.hcl) to show my awareness of infrastructure testing best practices and what I would implement in a production environment.

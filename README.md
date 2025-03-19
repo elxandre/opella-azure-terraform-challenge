@@ -1,18 +1,21 @@
-# opella-azure-terraform-challenge
-Azure Virtual Network Terraform Module
+# Azure Virtual Network Terraform Module
+
 This Terraform module deploys an Azure Virtual Network with associated subnets and optional security features.
-Features
 
-Virtual Network with customizable address space
-Multiple subnet creation with flexible configuration
-Network Security Groups with rule management
-Support for service endpoints
-Subnet delegations for Azure services
-Optional Network Watcher flow logs with Traffic Analytics
-Comprehensive tagging system
+## Features
 
-Usage
-hclCopymodule "vnet" {
+- Virtual Network with customizable address space
+- Multiple subnet creation with flexible configuration
+- Network Security Groups with rule management
+- Support for service endpoints
+- Subnet delegations for Azure services
+- Optional Network Watcher flow logs with Traffic Analytics
+- Comprehensive tagging system
+
+## Usage
+
+```hcl
+module "vnet" {
   source              = "./modules/vnet"
   vnet_name           = "my-vnet"
   resource_group_name = "my-resource-group"
@@ -49,22 +52,58 @@ hclCopymodule "vnet" {
     project     = "my-project"
   }
 }
-Requirements
-NameVersionterraform>= 1.0.0azurerm>= 3.0.0
-Inputs
-NameDescriptionTypeDefaultRequiredvnet_nameName of the virtual networkstringn/ayesresource_group_nameName of the resource groupstringn/ayeslocationAzure region where resources will be createdstringn/ayesaddress_spaceAddress space for the virtual networklist(string)["10.0.0.0/16"]nodns_serversList of DNS servers to use with the virtual networklist(string)[]nosubnetsMap of subnet objects. Key is subnet name, value is subnet propertiesmap(object({...})){}notagsTags to apply to resourcesmap(string){}nodefault_tagsDefault tags applied to all resourcesmap(string){ managed_by = "terraform" }noenable_network_monitoringEnable network monitoring features like flow logsboolfalsenonetwork_watcher_nameName of the Network Watcher to store flow logsstringnullnonetwork_watcher_resource_group_nameResource group name of the Network Watcherstringnullno
-See variables.tf for additional variable definitions and details.
-Outputs
-NameDescriptionvnet_idID of the Virtual Networkvnet_nameName of the Virtual Networkvnet_address_spaceAddress space of the Virtual Networksubnet_idsMap of subnet names to subnet IDssubnet_address_prefixesMap of subnet names to address prefixesnsg_idsMap of subnet names to NSG IDs
-Security Considerations
+```
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 1.0.0 |
+| azurerm | >= 3.0.0 |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| vnet_name | Name of the virtual network | `string` | n/a | yes |
+| resource_group_name | Name of the resource group | `string` | n/a | yes |
+| location | Azure region where resources will be created | `string` | n/a | yes |
+| address_space | Address space for the virtual network | `list(string)` | `["10.0.0.0/16"]` | no |
+| dns_servers | List of DNS servers to use with the virtual network | `list(string)` | `[]` | no |
+| subnets | Map of subnet objects. Key is subnet name, value is subnet properties | `map(object({...}))` | `{}` | no |
+| tags | Tags to apply to resources | `map(string)` | `{}` | no |
+| default_tags | Default tags applied to all resources | `map(string)` | `{ managed_by = "terraform" }` | no |
+| enable_network_monitoring | Enable network monitoring features like flow logs | `bool` | `false` | no |
+| network_watcher_name | Name of the Network Watcher to store flow logs | `string` | `null` | no |
+| network_watcher_resource_group_name | Resource group name of the Network Watcher | `string` | `null` | no |
+
+See `variables.tf` for additional variable definitions and details.
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| vnet_id | ID of the Virtual Network |
+| vnet_name | Name of the Virtual Network |
+| vnet_address_space | Address space of the Virtual Network |
+| subnet_ids | Map of subnet names to subnet IDs |
+| subnet_address_prefixes | Map of subnet names to address prefixes |
+| nsg_ids | Map of subnet names to NSG IDs |
+
+## Security Considerations
+
 This module includes several security features:
 
-Network Security Groups with customizable rules
-Network Watcher flow logs for monitoring network traffic
-Traffic Analytics for advanced threat detection
-Service Endpoints for securing connections to Azure services
+1. Network Security Groups with customizable rules
+2. Network Watcher flow logs for monitoring network traffic
+3. Traffic Analytics for advanced threat detection
+4. Service Endpoints for securing connections to Azure services
 
-Testing
+## Testing
+
 This module includes automated tests using Terratest. To run the tests:
-bashCopycd test
+
+```bash
+cd test
 go test -v
+```

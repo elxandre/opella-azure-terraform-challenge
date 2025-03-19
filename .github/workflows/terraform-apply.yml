@@ -1,0 +1,73 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to apply (dev/prod)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
+    concurrency: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.3
+
+      - name: Determine environment
+        id: env_name
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "env=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+              echo "env=prod" >> $GITHUB_OUTPUT
+            else
+              echo "env=dev" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Terraform Init
+        run: |
+          cd environments/${{ steps.env_name.outputs.env }}
+          terraform init
+
+      - name: Terraform Apply
+        run: |
+          cd environments/${{ steps.env_name.outputs.env }}
+          terraform apply -auto-approve
+
+      - name: Save Terraform Output
+        run: |
+          cd environments/${{ steps.env_name.outputs.env }}
+          terraform output -json > terraform_output.json
+
+      - name: Upload Output Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-output-${{ steps.env_name.outputs.env }}
+          path: environments/${{ steps.env_name.outputs.env }}/terraform_output.json

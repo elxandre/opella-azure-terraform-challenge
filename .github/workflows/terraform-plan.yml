@@ -1,0 +1,81 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to plan (dev/prod)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.3
+
+      - name: Determine environment
+        id: env_name
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "env=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            if [ "${{ github.base_ref }}" == "main" ]; then
+              echo "env=prod" >> $GITHUB_OUTPUT
+            else
+              echo "env=dev" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Terraform Init
+        run: |
+          cd environments/${{ steps.env_name.outputs.env }}
+          terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd environments/${{ steps.env_name.outputs.env }}
+          terraform plan -no-color -out=tfplan
+        continue-on-error: true
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan-${{ steps.env_name.outputs.env }}
+          path: environments/${{ steps.env_name.outputs.env }}/tfplan
+
+      - name: Post Plan to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const output = 'Terraform Plan Output:\n```\n' + 
+                          fs.readFileSync('environments/${{ steps.env_name.outputs.env }}/tfplan.txt', 'utf8') + 
+                          '\n```';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })

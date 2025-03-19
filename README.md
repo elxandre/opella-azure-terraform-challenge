@@ -147,3 +147,24 @@ The module includes:
 3. Integrate with a secrets management solution
 4. Set up automated disaster recovery testing
 5. Add infrastructure drift detection
+
+Explaining my Process
+
+I approached this challenge with a design-first methodology. Rather than immediately deploying resources, I carefully designed the infrastructure architecture to ensure it met all requirements for scalability, security, and maintainability.
+I focused on creating a robust, reusable VNET module that handles various networking configurations. The module was designed with flexibility in mind, supporting both simple development environments and complex production setups.
+I tested the Terraform code locally using terraform validate and terraform plan to ensure correct syntax and resource configurations without actually creating resources in Azure.
+
+The terraform plan output was generated using the following approach:
+
+I set up my local environment with the Azure CLI and authenticated to my Azure account
+I ran terraform init to initialize the Terraform configuration
+I used terraform plan -out=tfplan to generate the execution plan without applying it
+I then converted this plan to human-readable format with terraform show -no-color tfplan > terraform-plan-output.md
+
+This approach allowed me to verify the configuration accuracy and demonstrate what would be deployed without actually consuming Azure resources or incurring costs.
+Although I didn't deploy the actual infrastructure, I implemented several validation techniques:
+
+Static code analysis with TFLint to catch potential issues
+Security scanning with Checkov to identify security misconfigurations
+Terraform's built-in validation to ensure resource configurations were valid
+Created test cases with Terratest that could be used to verify the infrastructure if deployed
